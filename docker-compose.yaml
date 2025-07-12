@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  broker:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto_broker
+    ports:
+      - "1883:1883" # Expõe a porta do broker para o seu computador (host)
+    volumes:
+      - ./broker:/mosquitto/config # Mapeia nosso arquivo de configuração para dentro do container
+    networks:
+      - minha-rede
+
+
+  publisher:
+    build: ./publisher # Diz ao compose para construir a imagem a partir da pasta 'publisher'
+    container_name: publisher_service
+    depends_on:
+      - broker # Garante que o publisher só inicie depois que o broker estiver pronto
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+
+
+  subscriber:
+    build: ./subscriber # Diz ao compose para construir a imagem a partir da pasta 'subscriber'
+    container_name: subscriber_service
+    depends_on:
+      - broker # Garante que o subscriber só inicie depois que o broker estiver pronto
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+
+# A rede que permite que os contêineres se comuniquem usando seus nomes de serviço
+networks:
+  minha-rede:
+    driver: bridge
