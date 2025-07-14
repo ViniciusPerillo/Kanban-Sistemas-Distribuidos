@@ -3,14 +3,14 @@ from Stock import Stock, FullStock, EmptyStock
 
 class Warehouse(KanbanBase):
     
-    LOADINGS = [f"fornecedor_part{part}_loading" for part in KanbanBase.PARTS]
+    LOADINGS = [f"supplier_part{part}_loading" for part in KanbanBase.PARTS]
     
     ORDERS = [
-        *[f"fabrica-01-linha{idx}_part{part}_order" for idx in range(1,6) for part in KanbanBase.PARTS],
-        *[f"fabrica-02-linha{idx}_part{part}_order" for idx in range(1,9) for part in KanbanBase.PARTS]
+        *[f"factory-01-line{idx}_part{part}_order" for idx in range(1,6) for part in KanbanBase.PARTS],
+        *[f"factory-02-line{idx}_part{part}_order" for idx in range(1,9) for part in KanbanBase.PARTS]
     ]
 
-    TOPICS = ["clock"] + LOADINGS + ORDERS
+    TOPICS = [KanbanBase.CLOCK] + LOADINGS + ORDERS
     
     def __init__(self, **kargs):
         super().__init__(Warehouse.TOPICS, "warehouse")
@@ -23,7 +23,7 @@ class Warehouse(KanbanBase):
             )
             for part in KanbanBase.PARTS
         }
-
+        self.in_order = dict.fromkeys(KanbanBase.PARTS, False)
         self.type_order = {part: kargs[f"{part}type_order"] for part in KanbanBase.PARTS}
         self.reset_flags()
 
@@ -39,8 +39,10 @@ class Warehouse(KanbanBase):
                 _, part, _ = loading.split('_')
                 try: 
                     self.stocks[part].replenish(self.to_do[loading])
-                except FullStock as e:
-                    self.full_flags = e.lost
+                except FullStock:
+                    pass
+                
+                self.in_order[part] = False
 
         # Lines Orders
         for order in Warehouse.ORDERS:
@@ -49,7 +51,6 @@ class Warehouse(KanbanBase):
                 try: 
                     self.stocks[part].consume(self.to_do[order])
                 except EmptyStock as e:
-                    self.empty_flags[part] = 1
                     consumed = e.consumed
                 else:
                     consumed = self.to_do[order]
@@ -59,11 +60,12 @@ class Warehouse(KanbanBase):
         
         # Part Ordering
         for part in KanbanBase.PARTS:
-            if self.stocks[part].flag == 1:
-                self.publish(f"fornecedor_{part}_order", {"data": 2**self.type_order * 100})
+            if self.stocks[part].flag <= 1 and not self.in_order[part]:
+                self.publish(f"warehouse_{part}_order", {"data": self.type_order['part']})
+                self.in_order[part] = True
 
-        self.publish('almoxarifado_finished', {'data': 1})
-        self.publish('almoxarifado_data', self.stocks)
+        self.publish('warehouse_finished', {'data': 1})
+        self.publish('warehouse_data', self.stocks)
         self.reset_flags()
                 
 
