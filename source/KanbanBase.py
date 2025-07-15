@@ -8,6 +8,28 @@ class KanbanBase:
 
     PARTS = [f"part{part:0>3}" for part in range(1,101)]
 
+    PRODUCT_PARTS = {
+        'prod01': [f"part{part:0>3}" for part in range(1,44)] 
+                + [f"part{part:0>3}" for part in range(44,53)]
+                + [f"part{part:0>3}" for part in range(71,77)],
+
+        'prod02': [f"part{part:0>3}" for part in range(1,44)] 
+                + [f"part{part:0>3}" for part in range(44,53)]
+                + [f"part{part:0>3}" for part in range(77,83)],
+
+        'prod03': [f"part{part:0>3}" for part in range(1,44)] 
+                + [f"part{part:0>3}" for part in range(53,62)]
+                + [f"part{part:0>3}" for part in range(83,89)],
+
+        'prod04': [f"part{part:0>3}" for part in range(1,44)] 
+                + [f"part{part:0>3}" for part in range(53,62)]
+                + [f"part{part:0>3}" for part in range(89,95)],
+
+        'prod05': [f"part{part:0>3}" for part in range(1,44)] 
+                + [f"part{part:0>3}" for part in range(62,71)]
+                + [f"part{part:0>3}" for part in range(95,101)],
+    }
+
     CLOCK = 'clock'
 
     @staticmethod
@@ -38,6 +60,7 @@ class KanbanBase:
         self.__broker_address = "broker"
         self.__port = 1883
         self.topics = topics
+        self.client_id = client_id
         self.messages = dict.fromkeys(self.topics, None)
         self.to_do = dict.fromkeys(self.topics, None)
 

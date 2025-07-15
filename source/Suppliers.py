@@ -1,5 +1,4 @@
 from KanbanBase import KanbanBase
-from Stock import Stock, FullStock, EmptyStock
 
 class Suppliers(KanbanBase):
     
@@ -14,8 +13,9 @@ class Suppliers(KanbanBase):
         elif order_size == 1800:
             return 4
 
-    def __init__(self):
-        super().__init__(Suppliers.TOPICS, "supliers")
+    def __init__(self, orders):
+        super().__init__([KanbanBase.CLOCK] + orders, "supliers")
+        self.orders = orders
 
         self.lead_time = dict.fromkeys(KanbanBase.PARTS, -1)
         self.order_size = dict.fromkeys(KanbanBase.PARTS, 0)
