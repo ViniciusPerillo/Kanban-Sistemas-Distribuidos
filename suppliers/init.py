@@ -1,5 +1,5 @@
-from ..source.suppliers import Suppliers
-from ..source.kanban_base import KanbanBase
+from source.suppliers import Suppliers
+from source.kanban_base import KanbanBase
 
 ORDERS = [f"warehouse_part{part}_order" for part in KanbanBase.PARTS]
 
