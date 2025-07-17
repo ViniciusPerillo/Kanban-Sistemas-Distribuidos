@@ -1,4 +1,4 @@
-from kanban_base import KanbanBase
+from .kanban_base import KanbanBase
 
 class Suppliers(KanbanBase):
     @staticmethod

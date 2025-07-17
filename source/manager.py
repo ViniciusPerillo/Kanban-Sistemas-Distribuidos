@@ -1,8 +1,8 @@
-from kanban_base import KanbanBase
-from production_line import ProductionLine, LineStoped
-from stock import FullStock, EmptyStock, PartStock, VirtualStock
-from factory import Factory
-from utils import print_log
+from .kanban_base import KanbanBase
+from .production_line import ProductionLine, LineStoped
+from .stock import FullStock, EmptyStock, PartStock, VirtualStock
+from .factory import Factory
+from .utils import print_log
 from math import floor
 
 class Manager(KanbanBase):

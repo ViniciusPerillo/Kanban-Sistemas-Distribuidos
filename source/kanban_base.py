@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import time
 import json
 
-from utils import *
+from .utils import *
 
 class KanbanBase:
 

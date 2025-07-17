@@ -1,7 +1,7 @@
-from kanban_base import KanbanBase
-from production_line import ProductionLine, LineStoped
-from stock import FullStock, EmptyStock, PartStock, VirtualStock
-from factory import Factory
+from .kanban_base import KanbanBase
+from .production_line import ProductionLine, LineStoped
+from .stock import FullStock, EmptyStock, PartStock, VirtualStock
+from .factory import Factory
 import time
 
 class Master(KanbanBase):
@@ -20,12 +20,12 @@ class Master(KanbanBase):
 
         if kanban_flag == 0:
             level = f"\033[91m {'|'*bars:<25} \033[00m"
-        if kanban_flag == 1:
+        elif kanban_flag == 1:
             level = f"\033[93m {'|'*bars:<25} \033[00m"
-        if kanban_flag == 2:
+        elif kanban_flag == 2:
             level = f"\033[92m {'|'*bars:<25} \033[00m"
 
-        return f"[{level} {stock}/4000]"
+        return f"[{level} {stock}/{max}]"
 
     def interface(self):
         self.print_warehouse_data()

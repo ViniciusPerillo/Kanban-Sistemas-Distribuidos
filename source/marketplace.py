@@ -1,7 +1,7 @@
-from kanban_base import KanbanBase
-from production_line import ProductionLine, LineStoped
-from stock import FullStock, EmptyStock, PartStock, VirtualStock
-from factory import Factory
+from .kanban_base import KanbanBase
+from .production_line import ProductionLine, LineStoped
+from .stock import FullStock, EmptyStock, PartStock, VirtualStock
+from .factory import Factory
 import random
 
 class Marketplace(KanbanBase):

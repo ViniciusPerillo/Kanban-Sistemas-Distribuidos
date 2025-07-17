@@ -1,4 +1,4 @@
-from kanban_base import KanbanBase 
+from .kanban_base import KanbanBase 
 import json
 
 avarage_production = [0,0,0,0,0]

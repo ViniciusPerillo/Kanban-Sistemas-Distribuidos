@@ -1,5 +1,5 @@
-from stock import ProductStock, PartStock, FullStock, EmptyStock
-from kanban_base import KanbanBase
+from .stock import ProductStock, PartStock, FullStock, EmptyStock
+from .kanban_base import KanbanBase
 
 class LineStoped(Exception):
     def __init__(self, produced, not_produced):

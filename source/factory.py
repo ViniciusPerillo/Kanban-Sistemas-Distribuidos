@@ -1,7 +1,7 @@
-from kanban_base import KanbanBase
-from production_line import ProductionLine, LineStoped
-from stock import FullStock, EmptyStock
-from utils import print_log
+from .kanban_base import KanbanBase
+from .production_line import ProductionLine, LineStoped
+from .stock import FullStock, EmptyStock
+from .utils import print_log
 
 
 class Factory(KanbanBase):
