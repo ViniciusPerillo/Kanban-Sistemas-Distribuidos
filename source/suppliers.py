@@ -18,7 +18,7 @@ class Suppliers(KanbanBase):
         self.order_size = dict.fromkeys(KanbanBase.PARTS, 0)
 
     def do_day_cycle(self):
-        for order in Suppliers.ORDERS:
+        for order in self.orders:
             if self.to_do[order] is not None:
                 _, part, _ = order.split("_")
                 self.lead_time[part] = Suppliers.get_lead_time(self.to_do[order])

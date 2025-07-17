@@ -10,7 +10,7 @@ ORDERS = [
     *[f"pull-factory_{line}_part{part}_order" for line in Factory.PULL_LINES for part in KanbanBase.PARTS]
 ]
 
-with open("warehouse_config.json", "r") as fil:
+with open("/app/warehouse_config.json", "r") as fil:
     warehouse_config = json.load(fil)
 
 warehouse = Warehouse(loadings= LOADINGS, orders= ORDERS, **warehouse_config)

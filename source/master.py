@@ -47,7 +47,7 @@ class Master(KanbanBase):
         barrier = False
         while True: 
             for data in self.data:
-                barrier |= self.messages[data]
+                barrier |= self.messages[data] is None
             
             if not barrier:
                 self.interface()

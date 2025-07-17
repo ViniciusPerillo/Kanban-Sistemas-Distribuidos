@@ -6,4 +6,4 @@ DATA = ["suppliers_data", "warehouse_data", "push-factory_data", "pull-factory_d
 
 master = Master(DATA)
 
-master.start(master.loop_func)
+master.start(master.loop_func, args=[])

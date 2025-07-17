@@ -43,7 +43,7 @@ services:
     networks:
       - minha-rede
     volumes:
-      - ./config/warehouse_config.json:/app/config.json
+      - ./config/warehouse_config.json:/app/warehouse_config.json
 
   push-factor:
     build:
@@ -58,7 +58,7 @@ services:
     networks:
       - minha-rede
     volumes:
-      - ./config/push_factory_config.json:/app/config.json
+      - ./config/push_factory_config.json:/app/push_factory_config.json
   
   pull-factory:
     build:
@@ -73,7 +73,7 @@ services:
     networks:
       - minha-rede
     volumes:
-      - ./config/pull_factory_config.json:/app/config.json
+      - ./config/pull_factory_config.json:/app/pull_factory_config.json
 
   manager:
     build:
@@ -88,7 +88,7 @@ services:
     networks:
       - minha-rede
     volumes:
-      - ./config/manager_config.json:/app/config.json
+      - ./config/manager_config.json:/app/manager_config.json
 
   
   marketplace:
@@ -103,6 +103,8 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
+    volumes:
+      - ./config/marketplace_config.json:/app/marketplace_config.json
   
   master:
     build:

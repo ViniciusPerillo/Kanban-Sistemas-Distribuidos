@@ -74,7 +74,7 @@ class KanbanBase:
         self.client.on_message = KanbanBase.__on_message
         self.client.on_publish = KanbanBase.__on_publish
 
-    def start(self, function, args):
+    def start(self, function, args = []):
         try:
             self.client.connect(self.__broker_address, self.__port, 60)
             self.client.loop_start()

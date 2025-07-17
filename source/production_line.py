@@ -9,13 +9,13 @@ class LineStoped(Exception):
 
 class ProductionLine():
     
-    def __init__(self, **kargs):
+    def __init__(self, args):
         self.part_stocks = {
-            part: PartStock(**kargs[part])
+            part: PartStock(**args[part])
             for part in KanbanBase.PARTS
         }
 
-        self.product_stock = ProductStock(KanbanBase.PRODUCT_PARTS.keys(), **kargs["product"])
+        self.product_stock = ProductStock(KanbanBase.PRODUCT_PARTS.keys(), **args["product"])
 
     def reset_flags(self):
         for part_stock in self.part_stocks.values():

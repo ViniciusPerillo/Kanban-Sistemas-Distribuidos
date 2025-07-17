@@ -15,7 +15,7 @@ class Factory(KanbanBase):
         self.orders = orders
         self.product_orders = product_orders
         self.lines = {
-            line: ProductionLine(**line_kargs[line])
+            line: ProductionLine(line_kargs[line])
             for line, line_kargs in line_args.items()
         }
 

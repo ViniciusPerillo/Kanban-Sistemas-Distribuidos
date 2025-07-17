@@ -1,6 +1,6 @@
-from kanban_base import KanbanBase
-from stock import PartStock, FullStock, EmptyStock
-from utils import print_log
+from .kanban_base import KanbanBase
+from .stock import PartStock, FullStock, EmptyStock
+from .utils import print_log
 
 class Warehouse(KanbanBase):    
     def __init__(self, loadings, orders, stock_args, order_args):

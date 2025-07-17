@@ -6,7 +6,7 @@ PRODUCT_ORDERS = [f"marketplace_{prod}_order" for prod in KanbanBase.PRODUCT_PAR
 FACTORY_DATA = ["push-factory_data", "pull-factory_data"]
 
 
-with open("manager_config.json", "r") as fil:
+with open("/app/manager_config.json", "r") as fil:
     manager_config = json.load(fil)
 
 manager = Manager(

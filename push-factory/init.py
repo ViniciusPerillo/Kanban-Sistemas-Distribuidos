@@ -8,7 +8,7 @@ ORDERS = [f"manager_push-factory_line{idx:0>2}_order" for idx in range(1,6)]
 
 PRODUCT_ORDERS = [f"push-factory_{product}_order" for product in KanbanBase.PRODUCT_PARTS.keys()]
 
-with open("push_factory_config.json", "r") as fil:
+with open("/app/push_factory_config.json", "r") as fil:
     push_factory_config = json.load(fil)
 
 push_factory = Factory(
