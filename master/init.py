@@ -1,6 +1,5 @@
-from ..source.master import Master
-from ..source.kanban_base import KanbanBase
-import json
+from source.master import Master
+from source.kanban_base import KanbanBase
 
 
 DATA = ["suppliers_data", "warehouse_data", "push-factory_data", "pull-factory_data", "manager_data"]

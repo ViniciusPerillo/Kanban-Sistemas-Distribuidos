@@ -1,88 +1,117 @@
 version: '3.8'
 
 services:
+  base-builder:
+    image: kanban-base:latest 
+    build:
+      context: .             
+      dockerfile: Dockerfile.base 
 
   broker:
     image: eclipse-mosquitto:2.0
     container_name: mosquitto_broker
     ports:
-      - "1883:1883" 
+      - "1883:1883"
     volumes:
-      - ./broker:/mosquitto/config 
+      - ./broker/mosquitto.conf:/mosquitto/config/mosquitto.conf
     networks:
       - minha-rede
 
-  supplier:
-    build: ./supplier 
-    container_name: supplier_service
+  suppliers:
+    build:
+      context: . 
+      dockerfile: ./suppliers/Dockerfile 
+    container_name: suppliers_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder 
     environment:
-      - PYTHONUNBUFFERED=1
+      - PYTHONUNBUFFERED=1 
     networks:
       - minha-rede
 
-  
   warehouse:
-    build: ./warehouse 
+    build:
+      context: .
+      dockerfile: ./warehouse/Dockerfile
     container_name: warehouse_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
-  
+    volumes:
+      - ./config/warehouse_config.json:/app/config.json
 
-  push-factory:
-    build: ./push-factory 
-    container_name: push-factory_service
+  push-factor:
+    build:
+      context: .
+      dockerfile: ./push-factory/Dockerfile
+    container_name: push_factory_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
-
+    volumes:
+      - ./config/push_factory_config.json:/app/config.json
   
   pull-factory:
-    build: ./pull-factory 
-    container_name: pull-factory_service
+    build:
+      context: .
+      dockerfile: ./pull-factory/Dockerfile
+    container_name: pull_factory_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
+    volumes:
+      - ./config/pull_factory_config.json:/app/config.json
 
-  
   manager:
-    build: ./manager 
+    build:
+      context: .
+      dockerfile: ./manager/Dockerfile
     container_name: manager_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
+    volumes:
+      - ./config/manager_config.json:/app/config.json
 
   
   marketplace:
-    build: ./marketplace 
+    build:
+      context: .
+      dockerfile: ./marketplace/Dockerfile
     container_name: marketplace_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
-
   
   master:
-    build: ./master 
+    build:
+      context: .
+      dockerfile: ./master/Dockerfile
     container_name: master_service
     depends_on:
-      - broker 
+      - broker
+      - base-builder
     environment:
       - PYTHONUNBUFFERED=1
     networks:

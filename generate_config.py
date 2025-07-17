@@ -1,4 +1,4 @@
-from .kanban_base import KanbanBase 
+from source.kanban_base import KanbanBase 
 import json
 
 avarage_production = [0,0,0,0,0]
@@ -140,10 +140,10 @@ marketplace_config = {
 with open("./config/warehouse_config.json", "w") as fil:
     json.dump(warehouse_config, fil)
 
-with open("./config/push_factory_args.json", "w") as fil:
+with open("./config/push_factory_config.json", "w") as fil:
     json.dump(push_factory_args, fil)
 
-with open("./config/pull_factory_args.json", "w") as fil:
+with open("./config/pull_factory_config.json", "w") as fil:
     json.dump(pull_factory_args, fil)
 
 with open("./config/manager_config.json", "w") as fil:
