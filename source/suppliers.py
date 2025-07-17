@@ -1,10 +1,7 @@
-from KanbanBase import KanbanBase
+from kanban_base import KanbanBase
 
 class Suppliers(KanbanBase):
-    
-    ORDERS = [f"warehouse_part{part}_order" for part in KanbanBase.PARTS]
-    TOPICS = [KanbanBase.CLOCK] + ORDERS
-    
+    @staticmethod
     def get_lead_time(order_size):
         if order_size == 200:
             return 1

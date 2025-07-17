@@ -14,7 +14,7 @@ class FullStock(Exception):
 class PartStock:
     def __init__(self, 
                  max_capacity: int,
-                 initial_capacity: int,
+                 initial_stock: int,
                  red_threshold: int, 
                  yellow_threshold: int):
         
@@ -22,10 +22,11 @@ class PartStock:
         self.red_threshold = red_threshold
         self.yellow_threshold = yellow_threshold
         
-        self.stock = initial_capacity
+        self.stock = initial_stock
         self.kanban_flag = 2
         self.full_flag = 0
         self.empty_flag = 0
+
 
     def replenish(self, value: int):
         self.stock += value
@@ -62,9 +63,9 @@ class PartStock:
 
 
 class ProductStock():
-    def __init__(self, max_capacity: int, products: Iterable[str]):
+    def __init__(self, max_capacity: int, initial_stock: dict, products: Iterable[str]):
         self.max_capacity = max_capacity
-        self.stock = dict.fromkeys(products, 0)
+        self.stock = initial_stock
         self.full_flag = 0
         self.empty_flag = 0
 
@@ -93,5 +94,6 @@ class ProductStock():
             self.empty_flags = 1
             raise EmptyStock(consumed)
 
-        
-
+class VirtualStock(PartStock):
+    def reset_stock(self):
+        self.stock = 0

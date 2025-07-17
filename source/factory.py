@@ -1,33 +1,27 @@
-from KanbanBase import KanbanBase
-from ProductionLine import ProductionLine, LineStoped
-from Stock import FullStock, EmptyStock
+from kanban_base import KanbanBase
+from production_line import ProductionLine, LineStoped
+from stock import FullStock, EmptyStock
 from utils import print_log
 
 
 class Factory(KanbanBase):
     
-    LOADINGS = [f"push-factory_line{idx:0>2}_part{part}_loading" for idx in range(1,6) for part in KanbanBase.PARTS]
-
-    ORDERS = [f"manager_push-factory_line{idx:0>2}_order" for idx in range(1,6)]
-
-    PRODUCT_ORDERS = [f"push-factory_{product}_order" for product in KanbanBase.PRODUCT_PARTS.keys()]
-
-    TOPICS = [KanbanBase.CLOCK] + LOADINGS + ORDERS
+    PUSH_LINES = [f"line{idx:0>2}" for idx in range(1,6)]
+    PULL_LINES = [f"line{idx:0>2}" for idx in range(1,9)]
     
-    def __init__(self, client_id, loadings, orders, product_orders, line_args, order_args):
+    def __init__(self, client_id, loadings, orders, product_orders, line_args):
         super().__init__([KanbanBase.CLOCK] + loadings + orders, client_id)
         self.loadings = loadings
         self.orders = orders
         self.product_orders = product_orders
         self.lines = {
-            line: ProductionLine(**line_kargs)
-            for line, line_kargs in line_args.values()
+            line: ProductionLine(**line_kargs[line])
+            for line, line_kargs in line_args.items()
         }
-        self.type_order = order_args
 
     def reset_flags(self):
-        for line in self.lines.values():
-            line.reset_flags()
+        for line in self.lines.keys():
+            self.lines[line].reset_flags()
 
     def send_product_order(self):
         for product_order in self.product_orders:
@@ -69,7 +63,9 @@ class Factory(KanbanBase):
             for part in KanbanBase.PARTS:
                 if self.lines[line].need_replenish(part):
                     topic = "_".join([self.client_id, line, part, "order"])
-                    self.publish(topic, {"data": self.type_order[line][part]})
+                    stock = self.lines[line].part_stocks[part]
+                    payload = {"data": stock.yellow_threshold - stock.stock}
+                    self.publish(topic, payload)
 
     def do_day_cycle(self):
         # Libera stock da linha

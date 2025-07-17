@@ -6,35 +6,88 @@ services:
     image: eclipse-mosquitto:2.0
     container_name: mosquitto_broker
     ports:
-      - "1883:1883" # Expõe a porta do broker para o seu computador (host)
+      - "1883:1883" 
     volumes:
-      - ./broker:/mosquitto/config # Mapeia nosso arquivo de configuração para dentro do container
+      - ./broker:/mosquitto/config 
     networks:
       - minha-rede
 
-
-  publisher:
-    build: ./publisher # Diz ao compose para construir a imagem a partir da pasta 'publisher'
-    container_name: publisher_service
+  supplier:
+    build: ./supplier 
+    container_name: supplier_service
     depends_on:
-      - broker # Garante que o publisher só inicie depois que o broker estiver pronto
+      - broker 
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
 
-
-  subscriber:
-    build: ./subscriber # Diz ao compose para construir a imagem a partir da pasta 'subscriber'
-    container_name: subscriber_service
+  
+  warehouse:
+    build: ./warehouse 
+    container_name: warehouse_service
     depends_on:
-      - broker # Garante que o subscriber só inicie depois que o broker estiver pronto
+      - broker 
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+  
+
+  push-factory:
+    build: ./push-factory 
+    container_name: push-factory_service
+    depends_on:
+      - broker 
     environment:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
 
-# A rede que permite que os contêineres se comuniquem usando seus nomes de serviço
+  
+  pull-factory:
+    build: ./pull-factory 
+    container_name: pull-factory_service
+    depends_on:
+      - broker 
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+
+  
+  manager:
+    build: ./manager 
+    container_name: manager_service
+    depends_on:
+      - broker 
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+
+  
+  marketplace:
+    build: ./marketplace 
+    container_name: marketplace_service
+    depends_on:
+      - broker 
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+
+  
+  master:
+    build: ./master 
+    container_name: master_service
+    depends_on:
+      - broker 
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - minha-rede
+
 networks:
   minha-rede:
     driver: bridge

@@ -86,6 +86,10 @@ class KanbanBase:
             self.client.loop_stop()
             self.client.disconnect()
 
+    def loop_forever(self):
+        self.client.connect(self.__broker_address, self.__port, 60)
+        self.client.loop_forever()
+
     def handle_message(self, topic, data):
         if topic == KanbanBase.CLOCK:
             self.to_do = self.messages

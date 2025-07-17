@@ -1,5 +1,5 @@
-from Stock import ProductStock, PartStock, FullStock, EmptyStock
-from KanbanBase import KanbanBase
+from stock import ProductStock, PartStock, FullStock, EmptyStock
+from kanban_base import KanbanBase
 
 class LineStoped(Exception):
     def __init__(self, produced, not_produced):
@@ -11,16 +11,11 @@ class ProductionLine():
     
     def __init__(self, **kargs):
         self.part_stocks = {
-            part: PartStock(
-                max_capacity= kargs[f"{part}max_capacity"],
-                initial_capacity= kargs[f"{part}initial_capacity"],
-                yellow_threshold= kargs[f"{part}yellow_threshold"],
-                red_threshold= kargs[f"{part}red_threshold"]
-            )
+            part: PartStock(**kargs[part])
             for part in KanbanBase.PARTS
         }
 
-        self.product_stock = ProductStock(KanbanBase.PRODUCT_PARTS.keys(), kargs["product_max_capacity"])
+        self.product_stock = ProductStock(KanbanBase.PRODUCT_PARTS.keys(), **kargs["product"])
 
     def reset_flags(self):
         for part_stock in self.part_stocks.values():

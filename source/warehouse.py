@@ -1,30 +1,15 @@
-from KanbanBase import KanbanBase
-from Stock import PartStock, FullStock, EmptyStock
+from kanban_base import KanbanBase
+from stock import PartStock, FullStock, EmptyStock
 from utils import print_log
 
-class Warehouse(KanbanBase):
-    
-    LOADINGS = [f"suppliers_part{part}_loading" for part in KanbanBase.PARTS]
-    
-    ORDERS = [
-        *[f"push-factory_line{idx:0>2}_part{part}_order" for idx in range(1,6) for part in KanbanBase.PARTS],
-        *[f"pull-factory_line{idx:0>2}_part{part}_order" for idx in range(1,9) for part in KanbanBase.PARTS]
-    ]
-
-    TOPICS = [KanbanBase.CLOCK] + LOADINGS + ORDERS
-    
+class Warehouse(KanbanBase):    
     def __init__(self, loadings, orders, stock_args, order_args):
         super().__init__([KanbanBase.CLOCK] + loadings + orders, "warehouse")
         self.loadings = loadings
         self.orders = orders
 
         self.stocks = {
-            part: PartStock(
-                max_capacity= stock_args[f"{part}max_capacity"],
-                initial_capacity= stock_args[f"{part}initial_capacity"],
-                yellow_threshold= stock_args[f"{part}yellow_threshold"],
-                red_threshold= stock_args[f"{part}red_threshold"]
-            )
+            part: PartStock(**stock_args[part])
             for part in KanbanBase.PARTS
         }
         self.in_order = dict.fromkeys(KanbanBase.PARTS, False)
@@ -32,8 +17,8 @@ class Warehouse(KanbanBase):
         self.reset_flags()
 
     def reset_flags(self):
-        for stock in self.stocks.values():
-            stock.reset_flags()
+        for stock in self.stocks.keys():
+            self.stocks[stock].reset_flags()
 
     def recieve_loadings(self):
         for loading in self.loadings:
