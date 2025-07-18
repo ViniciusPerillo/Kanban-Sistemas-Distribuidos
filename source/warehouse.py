@@ -57,7 +57,6 @@ class Warehouse(KanbanBase):
         self.send_line_loadings()
         self.make_suppliers_orders()
 
-        self.publish('warehouse_finished', {'data': 1})
         self.publish('warehouse_data', {'data': self.stocks})
         self.reset_flags()
                 

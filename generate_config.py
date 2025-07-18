@@ -64,10 +64,10 @@ for idx in range(1,6):
     for part in KanbanBase.PARTS:
         if part in KanbanBase.PRODUCT_PARTS[f"prod{idx:0>2}"]:
             push_lines_args[f"line{idx:0>2}"][part] = dict(
-                max_capacity= 300,
-                initial_stock= 210,
+                max_capacity= 600,
+                initial_stock= 420,
                 red_threshold= 120, 
-                yellow_threshold= 150
+                yellow_threshold= 210
             )
         else:
             push_lines_args[f"line{idx:0>2}"][part] = dict(
@@ -78,10 +78,10 @@ for idx in range(1,6):
             )
         
     initial_stock = dict.fromkeys(KanbanBase.PRODUCT_PARTS.keys(), 0)
-    initial_stock[f"prod{idx:0>2}"] = 210
+    initial_stock[f"prod{idx:0>2}"] = 180
 
     push_lines_args[f"line{idx:0>2}"]["product"] = {
-        "max_capacity": 300,
+        "max_capacity": 600,
         "initial_stock": initial_stock
     }
 
@@ -89,15 +89,15 @@ pull_lines_args = {}
 for idx in range(1,9):
     pull_lines_args[f"line{idx:0>2}"] = {
         part: dict(
-            max_capacity= 300,
-            initial_stock= 210,
+            max_capacity= 600,
+            initial_stock= 420,
             red_threshold= 120, 
-            yellow_threshold= 150
+            yellow_threshold= 210
         )
-        for part in KanbanBase.PRODUCT_PARTS.keys()
+        for part in KanbanBase.PARTS
     }
     pull_lines_args[f"line{idx:0>2}"]["product"] = {
-        "max_capacity": 300,
+        "max_capacity": 600,
         "initial_stock": dict.fromkeys(KanbanBase.PRODUCT_PARTS.keys(), 0)
     }
 
@@ -112,14 +112,14 @@ pull_factory_args = {
 # Manager
 manager_stock_args = {}
 for idx in range(0,5):
-    red = avarage_production[idx] * 2
+    red = avarage_production[idx] * 3
     yellow = round(red*1.25)
-    max_capacity = 3900
+    max_capacity = 6800
     initial = (max_capacity - yellow)//2 + yellow
 
     manager_stock_args[f"prod{idx+1:0>2}"] = dict(
         max_capacity= max_capacity,
-        initial_stock= 210,
+        initial_stock= 360,
         red_threshold= red, 
         yellow_threshold= yellow
     )

@@ -10,12 +10,12 @@ class Factory(KanbanBase):
     PULL_LINES = [f"line{idx:0>2}" for idx in range(1,9)]
     
     def __init__(self, client_id, loadings, orders, product_orders, line_args):
-        super().__init__([KanbanBase.CLOCK] + loadings + orders, client_id)
+        super().__init__([KanbanBase.CLOCK] + loadings + orders + product_orders, client_id)
         self.loadings = loadings
         self.orders = orders
         self.product_orders = product_orders
         self.lines = {
-            line: ProductionLine(line_kargs[line])
+            line: ProductionLine(line_kargs)
             for line, line_kargs in line_args.items()
         }
 
@@ -28,35 +28,41 @@ class Factory(KanbanBase):
             _, product, _ = product_order.split("_")
 
             # Prioriza a linha com menos produtos pra liberar espaço
-            lines = sorted(list(self.lines.values()), key= lambda x: x[1].product_stock[product])
+            lines = sorted(list(self.lines.values()), key= lambda x: x.product_stock[product])
             
             for line in lines:
-                if self.to_do[product_order] > 0 and self.to_do[product_order] != None:
-                    try:
-                        line.consume(product, self.to_do[product_order])
-                    except EmptyStock as e:
-                        self.to_do[product_order] -= e.missing
-                        line.product_stock.empty_flag = 0
-                    else:
-                        self.to_do[product_order] = 0 
+                if self.to_do[product_order] != None:
+                    if self.to_do[product_order] > 0:
+                        try:
+                            line.consume(product, self.to_do[product_order])
+                        except EmptyStock as e:
+                            self.to_do[product_order] -= e.missing
+                            line.product_stock.empty_flag = 0
+                        else:
+                            self.to_do[product_order] = 0 
 
     def load_lines(self):
         for loading in self.loadings:
             _, line, part, _ = loading.split('_')
-            try: 
-                self.lines[line].replenish(part, self.to_do[loading])
-            except FullStock as e:
-                print_log(f"Estoque cheio: {e.lost} {part} perdidas")
+            if self.to_do[loading] != None:
+                try: 
+
+                    self.lines[line].replenish(part, self.to_do[loading])
+                except FullStock as e:
+                    print_log(f"Estoque cheio: {e.lost} {part} perdidas")
             
 
     def produce_order(self):
         for order in self.orders:
-            if self.to_do[order] is not None:
-                _, line, part, _ = order.split('_')
-                try: 
-                    self.lines[line].produce(*self.to_do[order])
-                except LineStoped as e:
-                    print_log(f"Linha parou: produção de {e.produced} - {e.not_produced} não produzidas")
+                _, _, line, _ = order.split('_')
+                if self.to_do[order] != None:
+
+                    try: 
+                        self.lines[line].produce(**self.to_do[order])
+                    except LineStoped as e:
+                        print_log(f"Linha parou: produção de {e.produced} {self.to_do[order]['product']}- {e.not_produced} não produzidas")
+                    else:
+                        print_log(f"{self.to_do[order]['amount']} de {self.to_do[order]['product']} produzidas")
 
     def make_warehouse_orders(self):
         for line in self.lines.keys():
@@ -76,7 +82,6 @@ class Factory(KanbanBase):
         # Termina de enviar remessa
         self.send_product_order()
 
-        self.publish(f'{self.client_id}_finished', {'data': 1})
         payload = {"data": self.lines}
         self.publish(f'{self.client_id}_data', payload)
         self.reset_flags()

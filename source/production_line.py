@@ -15,7 +15,10 @@ class ProductionLine():
             for part in KanbanBase.PARTS
         }
 
-        self.product_stock = ProductStock(KanbanBase.PRODUCT_PARTS.keys(), **args["product"])
+        self.product_stock = ProductStock(**args["product"])
+
+    def __str__(self):
+        return "ProductionLine"
 
     def reset_flags(self):
         for part_stock in self.part_stocks.values():
@@ -32,7 +35,7 @@ class ProductionLine():
                 to_correct = produced - e.consumed
                 produced = e.consumed
 
-                for part_label_y in KanbanBase.PRODUCT_PARTS[part_idx]:
+                for part_label_y in KanbanBase.PRODUCT_PARTS[product][:part_idx]:
                     self.part_stocks[part_label_y].replenish(to_correct)
 
         self.product_stock.replenish(product, produced)

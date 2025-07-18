@@ -21,12 +21,12 @@ class PartStock:
         self.max_capacity = max_capacity
         self.red_threshold = red_threshold
         self.yellow_threshold = yellow_threshold
-        
         self.stock = initial_stock
-        self.kanban_flag = 2
-        self.full_flag = 0
-        self.empty_flag = 0
+        
+        self.reset_flags()
 
+    def __str__(self):
+        return "PartStock"
 
     def replenish(self, value: int):
         self.stock += value
@@ -61,9 +61,16 @@ class PartStock:
         self.full_flag = 0
         self.empty_flag = 0
 
+        if self.stock > self.yellow_threshold:
+            self.kanban_flag = 2
+        elif self.stock > self.red_threshold:
+            self.kanban_flag = 1
+        else:
+            self.kanban_flag = 0
+
 
 class ProductStock():
-    def __init__(self, max_capacity: int, initial_stock: dict, products: Iterable[str]):
+    def __init__(self, max_capacity: int, initial_stock: dict):
         self.max_capacity = max_capacity
         self.stock = initial_stock
         self.full_flag = 0
@@ -71,6 +78,9 @@ class ProductStock():
 
     def __getitem__(self, key):
         return self.stock[key]
+    
+    def __str__(self):
+        return "ProductStock"
 
     def reset_flags(self):
         self.full_flag = 0
@@ -90,10 +100,14 @@ class ProductStock():
 
         if self.stock[product] < 0:
             consumed = value + self.stock[product]
+            missing = value - consumed
             self.stock[product] = 0
             self.empty_flags = 1
-            raise EmptyStock(consumed)
+            raise EmptyStock(consumed, missing)
 
 class VirtualStock(PartStock):
     def reset_stock(self):
         self.stock = 0
+
+    def __str__(self):
+        return "VirtualStock"

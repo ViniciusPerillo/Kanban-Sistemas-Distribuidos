@@ -11,7 +11,7 @@ class Suppliers(KanbanBase):
             return 4
 
     def __init__(self, orders):
-        super().__init__([KanbanBase.CLOCK] + orders, "supliers")
+        super().__init__([KanbanBase.CLOCK] + orders, "suppliers")
         self.orders = orders
 
         self.lead_time = dict.fromkeys(KanbanBase.PARTS, -1)
@@ -33,7 +33,6 @@ class Suppliers(KanbanBase):
                 self.publish(topic, {"data": self.order_size[part]})
                 self.order_size[part] = 0
 
-        self.publish('suppliers_finished', {'data': 1})
         payload = {'data': {'lead_time': self.lead_time, 'order_size': self.order_size}}
         self.publish('suppliers_data', payload)
 

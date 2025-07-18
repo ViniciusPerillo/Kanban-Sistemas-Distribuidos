@@ -105,7 +105,8 @@ services:
       - minha-rede
     volumes:
       - ./config/marketplace_config.json:/app/marketplace_config.json
-  
+
+      
   master:
     build:
       context: .

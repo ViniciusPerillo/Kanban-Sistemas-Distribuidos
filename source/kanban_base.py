@@ -1,7 +1,6 @@
 import paho.mqtt.client as mqtt
 import time
-import json
-
+import pickle as pkl
 from .utils import *
 
 class KanbanBase:
@@ -36,9 +35,10 @@ class KanbanBase:
     def __on_connect(client, userdata, flags, reason_code, properties):
         if reason_code == 0:
             print_log("Conectado ao broker MQTT!")
-            for topic in userdata:
+            for topic in userdata.topics:
                 client.subscribe(topic)
-                print_log(f"Assinando o tópico: {topic}")
+                #print_log(f"Assinando o tópico: {topic}")
+            print_log("Topicos inscritos")
         else:
             print_log(f"Falha na conexão, código de retorno: {reason_code}\n")
 
@@ -46,10 +46,16 @@ class KanbanBase:
     def __on_message(client, userdata, msg):
         print_log(f"Mensagem recebida no tópico '{msg.topic}'")
         try:
-            payload = json.loads(msg.payload.decode())
-            userdata.handle_message(msg.topic, data = payload['data'])
-        except json.JSONDecodeError:
-            print_log(f" > Payload não é um JSON válido: {msg.payload.decode()}")
+            payload = pkl.loads(msg.payload)  # Tentativa de desserialização
+            userdata.handle_message(msg.topic, data=payload['data'])
+            
+        except pkl.UnpicklingError as e:
+            # Mostra o payload ORIGINAL (bytes) sem tentar desserializar novamente
+            print_log(f"\033[91mERRO: {msg.topic} - Payload não é um Pickle válido. Bytes: {msg.payload}")
+            
+        # except KeyError as e:
+        #     # Payload foi desserializado, mas falta a chave 'data'
+        #     print_log(f"\033[91mERRO: {msg.topic} - Estrutura inválida: {pkl.loads(msg.payload)}. Erro: {e}")
 
     @staticmethod
     def __on_publish(client, userdata, mid, rc, props):
@@ -95,6 +101,7 @@ class KanbanBase:
             self.to_do = self.messages
             self.messages = dict.fromkeys(self.topics, None)
             self.do_day_cycle()
+            self.publish(f'{self.client_id}_finished', {'data': 1})
         else:
             self.messages[topic] = data
 
@@ -102,10 +109,10 @@ class KanbanBase:
         pass
 
     def publish(self, topic, payload):
-        result = self.client.publish(topic, json.dumps(payload), qos=1)
+        result = self.client.publish(topic, pkl.dumps(payload), qos=1)
                 
         if result.rc == mqtt.MQTT_ERR_SUCCESS:
-            print_log(f"Publicado: {topic}")
+            print_log(f"Publicado: {topic} - {str(payload)[:100]}")
         else:
             print_log(f"Erro na publicação: {result.rc}")
 
