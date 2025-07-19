@@ -1,7 +1,7 @@
 from .kanban_base import KanbanBase
 from .production_line import ProductionLine, LineStoped
 from .stock import FullStock, EmptyStock
-from .utils import print_log
+from .utils import print_log, print_warning
 
 
 class Factory(KanbanBase):
@@ -29,14 +29,13 @@ class Factory(KanbanBase):
 
             # Prioriza a linha com menos produtos pra liberar espaço
             lines = sorted(list(self.lines.values()), key= lambda x: x.product_stock[product])
-            
             for line in lines:
                 if self.to_do[product_order] != None:
                     if self.to_do[product_order] > 0:
                         try:
                             line.consume(product, self.to_do[product_order])
                         except EmptyStock as e:
-                            self.to_do[product_order] -= e.missing
+                            self.to_do[product_order] -= e.consumed
                             line.product_stock.empty_flag = 0
                         else:
                             self.to_do[product_order] = 0 
@@ -49,7 +48,7 @@ class Factory(KanbanBase):
 
                     self.lines[line].replenish(part, self.to_do[loading])
                 except FullStock as e:
-                    print_log(f"Estoque cheio: {e.lost} {part} perdidas")
+                    print_warning(f"Estoque cheio: {e.lost} {part} perdidas")
             
 
     def produce_order(self):
@@ -60,9 +59,11 @@ class Factory(KanbanBase):
                     try: 
                         self.lines[line].produce(**self.to_do[order])
                     except LineStoped as e:
-                        print_log(f"Linha parou: produção de {e.produced} {self.to_do[order]['product']}- {e.not_produced} não produzidas")
+                        print_warning(f"Linha parou: produção de {e.produced} {self.to_do[order]['product']}- {e.not_produced} não produzidas")
+                    except FullStock as e:
+                        print_warning(f"Linha cheia:{e.lost} {self.to_do[order]['product']} foram descartados")
                     else:
-                        print_log(f"{self.to_do[order]['amount']} de {self.to_do[order]['product']} produzidas")
+                        print_log(f"{self.to_do[order]['amount']} de {self.to_do[order]['product']} produzidas na linha {line}")
 
     def make_warehouse_orders(self):
         for line in self.lines.keys():

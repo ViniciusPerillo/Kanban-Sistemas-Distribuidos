@@ -3,12 +3,14 @@ from .kanban_base import KanbanBase
 class Suppliers(KanbanBase):
     @staticmethod
     def get_lead_time(order_size):
-        if order_size == 200:
+        if order_size == 1700:
             return 1
-        elif order_size == 600:
+        elif order_size == 2500:
             return 2
-        elif order_size == 1800:
-            return 4
+        elif order_size == 4000:
+            return 3
+        
+        raise KeyError
 
     def __init__(self, orders):
         super().__init__([KanbanBase.CLOCK] + orders, "suppliers")
@@ -29,7 +31,7 @@ class Suppliers(KanbanBase):
                 self.lead_time[part] -= 1
 
             if self.lead_time[part] == 0:
-                topic = f"supplier_{part}_loading"
+                topic = f"suppliers_{part}_loading"
                 self.publish(topic, {"data": self.order_size[part]})
                 self.order_size[part] = 0
 

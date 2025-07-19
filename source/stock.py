@@ -24,6 +24,7 @@ class PartStock:
         self.stock = initial_stock
         
         self.reset_flags()
+        self.reset_kanban_flag()
 
     def __str__(self):
         return "PartStock"
@@ -31,10 +32,7 @@ class PartStock:
     def replenish(self, value: int):
         self.stock += value
 
-        if self.stock > self.yellow_threshold:
-            self.kanban_flag = 2
-        elif self.stock > self.red_threshold:
-            self.kanban_flag = 1
+        self.reset_kanban_flag()
         
         if self.stock > self.max_capacity:
             lost = self.stock - self.max_capacity
@@ -45,10 +43,7 @@ class PartStock:
     def consume(self, value: int):
         self.stock -= value
 
-        if self.stock < self.red_threshold:
-            self.kanban_flag = 1
-        elif self.stock < self.yellow_threshold:
-            self.kanban_flag = 2
+        self.reset_kanban_flag()
         
         if self.stock < 0:
             consumed = value + self.stock
@@ -61,9 +56,11 @@ class PartStock:
         self.full_flag = 0
         self.empty_flag = 0
 
-        if self.stock > self.yellow_threshold:
+
+    def reset_kanban_flag(self):
+        if self.stock >= self.yellow_threshold:
             self.kanban_flag = 2
-        elif self.stock > self.red_threshold:
+        elif self.stock >= self.red_threshold:
             self.kanban_flag = 1
         else:
             self.kanban_flag = 0
@@ -97,7 +94,6 @@ class ProductStock():
         
     def consume(self, product: str, value: int):
         self.stock[product] -= value
-
         if self.stock[product] < 0:
             consumed = value + self.stock[product]
             missing = value - consumed

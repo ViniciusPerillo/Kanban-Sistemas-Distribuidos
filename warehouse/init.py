@@ -3,11 +3,11 @@ from source.kanban_base import KanbanBase
 from source.factory import Factory
 import json
 
-LOADINGS = [f"suppliers_part{part}_loading" for part in KanbanBase.PARTS]
+LOADINGS = [f"suppliers_{part}_loading" for part in KanbanBase.PARTS]
 
 ORDERS = [
-    *[f"push-factory_{line}_part{part}_order" for line in Factory.PUSH_LINES for part in KanbanBase.PARTS],
-    *[f"pull-factory_{line}_part{part}_order" for line in Factory.PULL_LINES for part in KanbanBase.PARTS]
+    *[f"push-factory_{line}_{part}_order" for line in Factory.PUSH_LINES for part in KanbanBase.PARTS],
+    *[f"pull-factory_{line}_{part}_order" for line in Factory.PULL_LINES for part in KanbanBase.PARTS]
 ]
 
 with open("/app/warehouse_config.json", "r") as fil:

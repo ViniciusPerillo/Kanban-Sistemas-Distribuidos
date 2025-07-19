@@ -8,8 +8,7 @@ import random
 class Marketplace(KanbanBase):
 
     @staticmethod
-    def truncated_normal(min_val, max_val, std_dev_ratio=6.0):
-        mean = (min_val + max_val) / 2
+    def truncated_normal(min_val, max_val, mean, std_dev_ratio=6.0):
         std_dev = (max_val - min_val) / std_dev_ratio
         
         while True:
@@ -26,9 +25,9 @@ class Marketplace(KanbanBase):
     
     def do_day_cycle(self):
         
-        order_size = Marketplace.truncated_normal(400, 900)
+        order_size = Marketplace.truncated_normal(100, 1000, 350, 6)
         
-        right_limit = 100*self.market_campaign_chance
+        right_limit = round(100/self.market_campaign_chance)
         market_campaign = random.randint(1, right_limit) == right_limit
         product_campaign = random.randint(0,4)
 

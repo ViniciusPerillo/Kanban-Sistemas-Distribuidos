@@ -119,6 +119,8 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       - minha-rede
+    volumes:
+      - ./data_summary/:/app/data_summary/
 
 networks:
   minha-rede:

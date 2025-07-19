@@ -44,7 +44,7 @@ class KanbanBase:
 
     @staticmethod
     def __on_message(client, userdata, msg):
-        print_log(f"Mensagem recebida no tópico '{msg.topic}'")
+        # print_log(f"Mensagem recebida no tópico '{msg.topic}'")
         try:
             payload = pkl.loads(msg.payload)  # Tentativa de desserialização
             userdata.handle_message(msg.topic, data=payload['data'])
@@ -59,7 +59,8 @@ class KanbanBase:
 
     @staticmethod
     def __on_publish(client, userdata, mid, rc, props):
-        print_log(f"Mensagem {mid} confirmada pelo broker")
+        pass
+        # print_log(f"Mensagem {mid} confirmada pelo broker")
     
 
     def __init__(self, topics, client_id):
@@ -112,7 +113,8 @@ class KanbanBase:
         result = self.client.publish(topic, pkl.dumps(payload), qos=1)
                 
         if result.rc == mqtt.MQTT_ERR_SUCCESS:
-            print_log(f"Publicado: {topic} - {str(payload)[:100]}")
+            pass
+            #print_log(f"Publicado: {topic} - {str(payload)[:100]}")
         else:
             print_log(f"Erro na publicação: {result.rc}")
 

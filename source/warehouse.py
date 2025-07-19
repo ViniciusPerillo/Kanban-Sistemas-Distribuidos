@@ -1,6 +1,6 @@
 from .kanban_base import KanbanBase
 from .stock import PartStock, FullStock, EmptyStock
-from .utils import print_log
+from .utils import print_log, print_warning
 
 class Warehouse(KanbanBase):    
     def __init__(self, loadings, orders, stock_args, order_args):
@@ -27,7 +27,7 @@ class Warehouse(KanbanBase):
                 try: 
                     self.stocks[part].replenish(self.to_do[loading])
                 except FullStock as e:
-                    print_log(f"Estoque cheio: {e.lost} {part} perdidas")
+                    print_warning(f"Estoque cheio: {e.lost} {part} perdidas")
                 
                 self.in_order[part] = False
 
@@ -39,7 +39,7 @@ class Warehouse(KanbanBase):
                     self.stocks[part].consume(self.to_do[order])
                 except EmptyStock as e:
                     consumed = e.consumed
-                    print_log(f"Estoque vazio: {e.consumed} {part} consumidas - {e.missing} peças faltantes")
+                    print_warning(f"Estoque vazio: {e.consumed} {part} consumidas - {e.missing} peças faltantes")
                 else:
                     consumed = self.to_do[order]
 

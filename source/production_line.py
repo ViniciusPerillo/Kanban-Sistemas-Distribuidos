@@ -50,7 +50,7 @@ class ProductionLine():
         self.product_stock.consume(product, amount)
 
     def need_replenish(self, part: str):
-        return self.part_stocks[part].kanban_flag <=1
+        return self.part_stocks[part].kanban_flag < 2
         
 
         

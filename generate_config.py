@@ -5,7 +5,7 @@ avarage_production = [0,0,0,0,0]
 
 for idx in range(0,5):
     mul = round(0.3 - idx*0.05, 2)
-    avarage_production[idx] = round((650*mul)*0.95 + (650*(mul+0.2))*0.05)
+    avarage_production[idx] = round((700*mul)*0.95 + (700*(mul+0.2))*0.05)
 
 # Warehouse
 
@@ -15,21 +15,28 @@ products_use = dict.fromkeys(KanbanBase.PARTS, 0)
 for part in KanbanBase.PARTS:
     for idx in range(0,5):
         if part in KanbanBase.PRODUCT_PARTS[f"prod{(idx+1):0>2}"]:
-            part_production_warehouse[part] += avarage_production[idx]
+            part_production_warehouse[part] += avarage_production[idx]*1
             products_use[part] += 1
 
 warehouse_type_order = {}
 lead_time = {}
+max_capacity_parts = {}
 for part in KanbanBase.PARTS:
     if products_use[part] == 5:
-        warehouse_type_order[part] = 1800
-        lead_time[part] = 4
+        warehouse_type_order[part] = 4000
+        lead_time[part] = 5
+        max_capacity_parts[part] = 50000
+        part_production_warehouse[part] *= 6
     elif products_use[part] == 2:
-        warehouse_type_order[part] = 600
-        lead_time[part] = 2
+        warehouse_type_order[part] = 2500
+        lead_time[part] = 4
+        max_capacity_parts[part] = 15000
+        part_production_warehouse[part] *= 3
     elif products_use[part] == 1:
-        warehouse_type_order[part] = 200
-        lead_time[part] = 1
+        warehouse_type_order[part] = 1700
+        lead_time[part] = 3
+        max_capacity_parts[part] = 5000
+        part_production_warehouse[part] *= 2
 
 warehouse_stock_args = {
     part: dict(
@@ -43,9 +50,9 @@ warehouse_stock_args = {
 
 for part in KanbanBase.PARTS:
     red = part_production_warehouse[part] * lead_time[part]
-    yellow = round(red*1.25)
-    max_capacity = 10000
-    initial = (max_capacity - yellow)//2 + yellow
+    yellow = round(red*1.3)
+    max_capacity = max_capacity_parts[part]
+    initial = yellow -1 #+ (max_capacity_parts[part] - yellow)//4
     
     warehouse_stock_args[part]["max_capacity"] = max_capacity
     warehouse_stock_args[part]["initial_stock"] = initial
@@ -64,10 +71,10 @@ for idx in range(1,6):
     for part in KanbanBase.PARTS:
         if part in KanbanBase.PRODUCT_PARTS[f"prod{idx:0>2}"]:
             push_lines_args[f"line{idx:0>2}"][part] = dict(
-                max_capacity= 600,
-                initial_stock= 420,
-                red_threshold= 120, 
-                yellow_threshold= 210
+                max_capacity= 1000,
+                initial_stock= 210,
+                red_threshold= 180, 
+                yellow_threshold= 240
             )
         else:
             push_lines_args[f"line{idx:0>2}"][part] = dict(
@@ -78,10 +85,10 @@ for idx in range(1,6):
             )
         
     initial_stock = dict.fromkeys(KanbanBase.PRODUCT_PARTS.keys(), 0)
-    initial_stock[f"prod{idx:0>2}"] = 180
+    initial_stock[f"prod{idx:0>2}"] = 240
 
     push_lines_args[f"line{idx:0>2}"]["product"] = {
-        "max_capacity": 600,
+        "max_capacity": 1000,
         "initial_stock": initial_stock
     }
 
@@ -89,15 +96,15 @@ pull_lines_args = {}
 for idx in range(1,9):
     pull_lines_args[f"line{idx:0>2}"] = {
         part: dict(
-            max_capacity= 600,
-            initial_stock= 420,
-            red_threshold= 120, 
-            yellow_threshold= 210
+            max_capacity= 1000,
+            initial_stock= 210,
+            red_threshold= 180, 
+            yellow_threshold= 240
         )
         for part in KanbanBase.PARTS
     }
     pull_lines_args[f"line{idx:0>2}"]["product"] = {
-        "max_capacity": 600,
+        "max_capacity": 1000,
         "initial_stock": dict.fromkeys(KanbanBase.PRODUCT_PARTS.keys(), 0)
     }
 
@@ -113,13 +120,13 @@ pull_factory_args = {
 manager_stock_args = {}
 for idx in range(0,5):
     red = avarage_production[idx] * 3
-    yellow = round(red*1.25)
-    max_capacity = 6800
+    yellow = round(red*1.3)
+    max_capacity = 13000
     initial = (max_capacity - yellow)//2 + yellow
 
     manager_stock_args[f"prod{idx+1:0>2}"] = dict(
         max_capacity= max_capacity,
-        initial_stock= 360,
+        initial_stock= 240,
         red_threshold= red, 
         yellow_threshold= yellow
     )
